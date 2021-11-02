@@ -1,0 +1,55 @@
+CREATE TABLE enclosure 
+    (id SERIAL PRIMARY KEY, name VARCHAR(255), capacity INT, closedForMaintenance BOOLEAN);
+CREATE TABLE staff 
+    (id SERIAL PRIMARY KEY, name VARCHAR(255), employeeNumber INT);
+CREATE TABLE animals (
+    id SERIAL PRIMARY KEY, name VARCHAR(255), type VARCHAR(255), age INT4, enclosure_id INT4 REFERENCES enclosure(id));
+CREATE TABLE assignment 
+    (id SERIAL PRIMARY KEY, employeeId INT REFERENCES staff(id), enclosureId INT REFERENCES enclosure(id), day VARCHAR(255));
+
+INSERT INTO enclosure (name, capacity, closedForMaintenance) VALUES ('big cat field', '20', false);
+INSERT INTO enclosure (name, capacity, closedForMaintenance) VALUES ('big bird cage', '50', false);
+
+INSERT INTO staff (name, employeeNumber) VALUES ('Queenie', 1);
+INSERT INTO staff (name, employeeNumber) VALUES ('Jess', 2);
+INSERT INTO staff (name, employeeNumber) VALUES ('Colin', 3);
+INSERT INTO staff (name, employeeNumber) VALUES ('Nelson', 4);
+
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('1', '1', 'Monday');
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('2', '1', 'Monday');
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('3', '2', 'Monday');
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('4', '2', 'Monday');
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('1', '1', 'Tuesday');
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('2', '1', 'Tuesday');
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('3', '2', 'Tuesday');
+INSERT INTO assignment (employeeId, enclosureId, day) VALUES ('4', '2', 'Tuesday');
+
+INSERT INTO animals (name, type, age, enclosure_id) VALUES ('Tony', 'Tiger', 59, 1);
+INSERT INTO animals (name, type, age, enclosure_id) VALUES ('Leo', 'Lion', 12, 1);
+INSERT INTO animals (name, type, age, enclosure_id) VALUES ('Bam', 'Pigeon', 3, 2);
+INSERT INTO animals (name, type, age, enclosure_id) VALUES ('Melvin', 'Eagle', 8, 2);
+
+SELECT animals.name, type, enclosure_id, enclosure.name FROM animals 
+    INNER JOIN enclosure ON animals.enclosure_id =enclosure.id 
+    WHERE enclosure.id = 1;
+
+SELECT DISTINCT staff.name FROM staff 
+    INNER JOIN assignment ON staff.id = assignment.employeeid 
+    INNER JOIN enclosure ON assignment.enclosureid = enclosure.id 
+    WHERE assignment.enclosureid = 2;
+
+SELECT DISTINCT staff.name FROM staff 
+    INNER JOIN assignment ON staff.id = assignment.employeeid 
+    INNER JOIN enclosure ON assignment.enclosureid = enclosure.id 
+    WHERE closedformaintenance = true;
+
+SELECT animals.name, animals.age, enclosure.name FROM animals 
+    INNER JOIN enclosure ON enclosure_id = enclosure.id 
+    ORDER BY animals.age DESC LIMIT 1;
+
+SELECT COUNT(DISTINCT type) FROM animals 
+    INNER JOIN assignment ON enclosure_id = assignment.enclosureid 
+    INNER JOIN staff ON employeeid = staff.id 
+    WHERE staff.name = 'Jess';
+
+
